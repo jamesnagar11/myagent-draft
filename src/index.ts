@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 import { parseArgs } from "node:util";
-import { GoogleGenAI } from "@google/genai";
+import { getProvider } from "./providers";
+import type { Message } from "./types";
 
 const { values} = parseArgs({
     options: {
@@ -12,7 +13,11 @@ const { values} = parseArgs({
         model: {
             type: 'string',
             short: 'm',
-            default: 'gemini-3.5-flash-lite'
+            default: 'openrouter/free'
+        },
+        provider: {
+            type: 'string',
+            default: 'openrouter'
         }
     }
 });
@@ -22,11 +27,20 @@ if(!values.prompt) {
     process.exit(1);
 }
 
-const ai = new GoogleGenAI({apiKey: process.env.GEMINI_API_KEY!});
+const provider = getProvider(values.provider);
+const model = values.model;
 
-const interaction = await ai.interactions.create({
-    model: values.model,
-    input: values.prompt
-});
+const messages: Message[] = [{role: "user", content: values.prompt}];
 
-console.log(interaction.output_text);
+for await (const event of provider.stream({messages, model})) {
+    if(event.type === "text_delta") {
+        process.stdout.write(event.delta);
+    }
+    else if(event.type === "done") {
+        process.stdout.write("\n");
+        process.stdout.write(`Stop Reason: ${event.message.stopReason}\n`);
+        process.stdout.write(`Input Tokens: ${event.message.usage.input}\nOutput Tokens: ${event.message.usage.output}`);
+        process.exit(0);
+    }
+}
+

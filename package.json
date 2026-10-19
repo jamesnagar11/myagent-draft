@@ -12,6 +12,7 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "@google/genai": "^2.30.0"
+    "@google/genai": "^2.30.0",
+    "@openrouter/sdk": "^1.4.25"
   }
 }
