@@ -1,0 +1,17 @@
+{
+  "name": "myagent",
+  "module": "index.ts",
+  "type": "module",
+  "bin": {
+    "myagent": "./src/index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@google/genai": "^2.30.0"
+  }
+}
