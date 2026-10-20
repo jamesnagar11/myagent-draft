@@ -19,7 +19,7 @@ export type AgentOptions = {
 
 export async function runAgent(opts: AgentOptions): Promise<void> {
     const { provider, model, system, tools, messages, onEvent } = opts;
-    const maxTurns = opts?.maxTurns ?? 5;
+    const maxTurns = opts?.maxTurns ?? 20;
 
     const push = (message: Message) => {
         messages.push(message);
